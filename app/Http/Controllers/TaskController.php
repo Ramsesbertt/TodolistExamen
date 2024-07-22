@@ -55,5 +55,13 @@ class TaskController extends Controller
         $task->delete();
         return redirect()->route('tasks.index')->with('success', 'Tarea eliminada correctamente');
     }
+
+    public function search(Request $request)
+    {
+    $query = $request->input('query');
+    $tasks = Task::where('title', 'LIKE', "%{$query}%")->get();
+
+    return view('tasks.index', compact('tasks'));
+    }
 }
 
