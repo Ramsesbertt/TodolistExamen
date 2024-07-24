@@ -22,3 +22,19 @@ body {
 .btn {
     margin-right: 5px;
 }
+
+.status-select {
+    border-radius: 8px;
+    padding: 5px;
+    margin: 0;
+}
+
+.status-select option[value="Sin completar"] {
+    background-color: grey;
+    color: white;
+}
+
+.status-select option[value="Completado"] {
+    background-color: green;
+    color: white;
+}

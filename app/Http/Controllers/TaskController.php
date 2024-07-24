@@ -28,6 +28,7 @@ class TaskController extends Controller
         $task = new Task;
         $task->title = $request->title;
         $task->user_id = Auth::id();
+        $task->status = 'Sin completar'; // Establece el estado inicial
         $task->save();
 
         return redirect()->route('tasks.index')->with('success', 'Tarea creada correctamente');
@@ -45,6 +46,7 @@ class TaskController extends Controller
         ]);
 
         $task->title = $request->title;
+        $task->status = $request->status; // Actualiza el estado
         $task->save();
 
         return redirect()->route('tasks.index')->with('success', 'Tarea actualizada correctamente');
@@ -58,10 +60,20 @@ class TaskController extends Controller
 
     public function search(Request $request)
     {
-    $query = $request->input('query');
-    $tasks = Task::where('title', 'LIKE', "%{$query}%")->get();
+        $query = $request->input('query');
+        $tasks = Task::where('title', 'LIKE', "%{$query}%")->where('user_id', Auth::id())->get();
 
-    return view('tasks.index', compact('tasks'));
+        return view('tasks.index', compact('tasks'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $task = Task::find($id);
+        $task->status = $request->status;
+        $task->save();
+
+        return redirect()->route('tasks.index')->with('success', 'Estado de la tarea actualizado correctamente');
     }
 }
+
 

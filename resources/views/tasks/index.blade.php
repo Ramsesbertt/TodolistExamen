@@ -66,6 +66,7 @@
                     <tr>
                         <th>Id</th>
                         <th>Tarea</th>
+                        <th>Estado</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
@@ -74,6 +75,11 @@
                         <tr>
                             <td>{{ $task->id }}</td>
                             <td>{{ $task->title }}</td>
+                            <td>
+                                <span class="badge {{ $task->status == 'Completado' ? 'bg-success' : 'bg-secondary' }}">
+                                    {{ $task->status }}
+                                </span>
+                            </td>
                             <td>
                                 <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit"></i> Editar
@@ -99,3 +105,4 @@
     </div>
 </div>
 @endsection
+
