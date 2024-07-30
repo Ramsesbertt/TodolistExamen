@@ -3,45 +3,36 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <!-- Barra Lateral -->
-        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{{ route('home') }}">
-                            <i class="fas fa-home"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-tasks"></i> Tareas
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-user"></i> Perfil
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-cog"></i> Configuración
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
-        <!-- Contenido Principal -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>Listado de tareas de {{ Auth::user()->name }}</h1>
-                <div>
-                    <a href="{{ route('tasks.create') }}" class="btn btn-success me-2">
-                        <i class="fas fa-plus"></i> Nueva tarea
-                    </a>
+        <!-- Barra lateral -->
+        <div class="col-md-2 bg-light sidebar" id="sidebar">
+            <h4 class="mt-4">Opciones</h4>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('tasks.index') }}">Tareas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('tasks.calendar') }}">Calendario</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('tasks.settings') }}">Configuración</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('tasks.kanban') }}">Kanban</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('tasks.about') }}">Acerca de</a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="col-md-10">
+            <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+                <h2>Listado de tareas de {{ Auth::user()->name }}</h2>
+                <div class="btn-group">
+                    <a href="{{ route('tasks.create') }}" class="btn btn-primary">Agregar nueva tarea</a>
                     <a href="{{ route('logout') }}" class="btn btn-secondary"
                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        <i class="fas fa-sign-out-alt"></i> Salir
+                        Salir
                     </a>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         @csrf
@@ -50,59 +41,62 @@
             </div>
 
             <!-- Botón de Búsqueda -->
-            <form action="{{ route('tasks.search') }}" method="GET" class="input-group mb-3">
+            <form action="{{ route('tasks.search') }}" method="GET" class="input-group mb-3" style="width: 50%;">
                 <input type="text" class="form-control" id="search" name="query" placeholder="Buscar tarea..." aria-label="Buscar tarea">
-                <button class="btn btn-outline-secondary" type="submit" id="button-search">Buscar</button>
+                <button class="btn btn-success" type="submit" id="button-search">Buscar</button>
             </form>
 
-            @if(request()->has('query'))
-                <div class="mb-3">
-                    <a href="{{ route('home') }}" class="btn btn-primary">Volver a la página principal</a>
-                </div>
-            @endif
-
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Tarea</th>
-                        <th>Estado</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($tasks as $task)
+            @if($tasks->isEmpty())
+                <p>No hay tareas.</p>
+            @else
+                <table class="table">
+                    <thead>
                         <tr>
-                            <td>{{ $task->id }}</td>
-                            <td>{{ $task->title }}</td>
-                            <td>
-                                <span class="badge {{ $task->status == 'Completado' ? 'bg-success' : 'bg-secondary' }}">
-                                    {{ $task->status }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                                <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="fas fa-trash"></i> Borrar
-                                    </button>
-                                </form>
-                            </td>
+                            <th scope="col">ID</th>
+                            <th scope="col">Título</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Prioridad</th>
+                            <th scope="col">Acciones</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            @if (session('success'))
-                <div class="alert alert-success mt-3">
-                    {{ session('success') }}
-                </div>
+                    </thead>
+                    <tbody>
+                        @foreach($tasks as $task)
+                            <tr>
+                                <td class="align-middle">{{ $task->id }}</td>
+                                <td class="align-middle">{{ $task->title }}</td>
+                                <td class="align-middle">
+                                    @if($task->status == 'Completado')
+                                        <span class="badge bg-success">{{ $task->status }}</span>
+                                    @else
+                                        <span class="badge bg-secondary">{{ $task->status }}</span>
+                                    @endif
+                                </td>
+                                <td class="align-middle">
+                                    @if($task->priority == 'Alta')
+                                        <span class="badge bg-danger">{{ $task->priority }}</span>
+                                    @elseif($task->priority == 'Media')
+                                        <span class="badge bg-warning">{{ $task->priority }}</span>
+                                    @else
+                                        <span class="badge bg-info">{{ $task->priority }}</span>
+                                    @endif
+                                </td>
+                                <td class="align-middle">
+                                    <div class="d-flex justify-content-center">
+                                        <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-warning btn-sm mx-1">Editar</a>
+                                        <form action="{{ route('tasks.destroy', $task->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm mx-1">Eliminar</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                {{ $tasks->links() }}
             @endif
-        </main>
+        </div>
     </div>
 </div>
 @endsection
-

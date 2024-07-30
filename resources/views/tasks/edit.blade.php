@@ -12,41 +12,68 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Título</label>
-                            <input type="text" class="form-control" id="title" name="title" value="{{ $task->title }}" required>
-                        </div>
+                        <div class="form-group row">
+                            <label for="title" class="col-md-4 col-form-label text-md-right">{{ __('Título') }}</label>
 
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Estado</label>
-                            <div>
-                                <button type="button" class="btn {{ $task->status == 'Sin completar' ? 'btn-secondary' : 'btn-outline-secondary' }} me-2" onclick="updateStatus('Sin completar')">Sin completar</button>
-                                <button type="button" class="btn {{ $task->status == 'Completado' ? 'btn-success' : 'btn-outline-success' }}" onclick="updateStatus('Completado')">Completado</button>
+                            <div class="col-md-6">
+                                <input id="title" type="text" class="form-control @error('title') is-invalid @enderror" name="title" value="{{ $task->title }}" required autocomplete="title" autofocus>
+
+                                @error('title')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
-                            <input type="hidden" id="status" name="status" value="{{ $task->status }}">
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                        <div class="form-group row mt-3">
+                            <label for="status" class="col-md-4 col-form-label text-md-right">{{ __('Estado') }}</label>
+                            <div class="col-md-6">
+                                <select id="status" class="form-control @error('status') is-invalid @enderror" name="status" required>
+                                    <option value="Sin completar" {{ $task->status == 'Sin completar' ? 'selected' : '' }}>Sin completar</option>
+                                    <option value="Completado" {{ $task->status == 'Completado' ? 'selected' : '' }}>Completado</option>
+                                </select>
+
+                                @error('status')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row mt-3">
+                            <label for="priority" class="col-md-4 col-form-label text-md-right">{{ __('Prioridad') }}</label>
+                            <div class="col-md-6">
+                                <select id="priority" class="form-control @error('priority') is-invalid @enderror" name="priority" required>
+                                    <option value="Baja" {{ $task->priority == 'Baja' ? 'selected' : '' }}>Baja</option>
+                                    <option value="Media" {{ $task->priority == 'Media' ? 'selected' : '' }}>Media</option>
+                                    <option value="Alta" {{ $task->priority == 'Alta' ? 'selected' : '' }}>Alta</option>
+                                </select>
+
+                                @error('priority')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row mt-4">
+                            <div class="col-md-6 offset-md-4">
+                                <button type="submit" class="btn btn-primary">
+                                    {{ __('Actualizar Tarea') }}
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    function updateStatus(status) {
-        document.getElementById('status').value = status;
-        const buttons = document.querySelectorAll('.btn');
-        buttons.forEach(button => button.classList.remove('btn-secondary', 'btn-success', 'btn-outline-secondary', 'btn-outline-success'));
-        if (status === 'Sin completar') {
-            event.target.classList.add('btn-secondary');
-            buttons[1].classList.add('btn-outline-success');
-        } else {
-            event.target.classList.add('btn-success');
-            buttons[0].classList.add('btn-outline-secondary');
-        }
-    }
-</script>
 @endsection
+
+
+
 
