@@ -28,7 +28,7 @@ class TaskController extends Controller
         $task = new Task;
         $task->title = $request->title;
         $task->user_id = Auth::id();
-        $task->status = 'Sin completar';
+        $task->status = 'Pendiente'; 
         $task->priority = 'Baja';
         $task->save();
 
@@ -63,9 +63,46 @@ class TaskController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
-        $tasks = Task::where('title', 'LIKE', "%{$query}%")->paginate(10);
+        $tasks = Task::where('title', 'LIKE', "%{$query}%")->get();
 
         return view('tasks.index', compact('tasks'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $task = Task::find($id);
+        $task->status = $request->status;
+        $task->save();
+
+        return redirect()->route('tasks.index')->with('success', 'Estado de la tarea actualizado correctamente');
+    }
+
+    public function calendar()
+    {
+        $tasks = Task::where('user_id', Auth::id())
+                     ->where('status', 'Completado')
+                     ->orderBy('completed_at')
+                     ->get()
+                     ->groupBy(function($date) {
+                         return \Carbon\Carbon::parse($date->completed_at)->format('Y-m-d');
+                     });
+
+        return view('calendar.index', ['tasksByDate' => $tasks]);
+    }
+
+    public function settings()
+    {
+        return view('tasks.settings');
+    }
+
+    public function kanban()
+    {
+        return view('tasks.kanban');
+    }
+
+    public function about()
+    {
+        return view('tasks.about');
     }
 }
 

@@ -33,3 +33,21 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 const app = new Vue({
     el: '#app',
 });
+
+// Importar FullCalendar y el plugin dayGrid
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+
+// Inicializar el calendario si el elemento con id 'calendar' está presente
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    if (calendarEl) {
+        var calendar = new Calendar(calendarEl, {
+            plugins: [dayGridPlugin],
+            initialView: 'dayGridMonth',
+            events: calendarEvents // Esta variable será proporcionada por el backend
+        });
+        calendar.render();
+    }
+});
+
